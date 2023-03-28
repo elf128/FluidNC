@@ -6,6 +6,7 @@
 
 #    include "Main.h"
 #    include "Machine/MachineConfig.h"
+#    include "UI/UIConfig.h"
 
 #    include "Config.h"
 #    include "Report.h"
@@ -39,8 +40,6 @@ void setup() {
 
         WebUI::WiFiConfig::reset();
 
-        display_init();
-
         protocol_init();
 
         // Load settings from non-volatile storage
@@ -56,6 +55,9 @@ void setup() {
         }
 
         bool configOkay = config->load();
+#if defined( INCLUDE_LVGL )
+        bool uiOkay = ui->load();
+#endif
 
         make_user_commands();
 
@@ -107,6 +109,12 @@ void setup() {
 
             config->_kinematics->init();
         }
+
+#if defined( INCLUDE_LVGL )
+        if ( uiOkay ) {
+            display_init();
+        }
+#endif
 
         // Initialize system state.
         if (sys.state != State::ConfigAlarm) {

@@ -50,6 +50,9 @@ namespace Machine {
         handler.item("miso_pin", _miso);
         handler.item("mosi_pin", _mosi);
         handler.item("sck_pin", _sck);
+
+        handler.item("bus_id", _busId,   0,3 );
+
     }
 
     // XXX it would be nice to have some way to turn off SPI entirely

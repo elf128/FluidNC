@@ -1,0 +1,36 @@
+screen: TF24 with ILI9341
+version: 0.0.1
+
+lcd_driver:
+    definition: ILI9341.yaml
+    connection:
+        spi:
+            miso_pin: gpio.19
+            mosi_pin: gpio.23
+            sck_pin: gpio.18
+            cs_pin: gpio.25
+            frequency: 40000000
+            read_frequency: 20000000
+            
+        dc_pin: gpio.33
+        rst_pin: gpio.27
+        en_pin: gpio.5
+
+    width: 320
+    height: 240
+    rotate: 2
+    rgb_order: 1
+    
+touch_driver:
+    definition: Touch.yaml
+    connection:
+        shared_spi:
+            cs_pin: gpio.26
+            frequency: 2000000
+            
+    x_left: 0
+    y_up: 0
+    x_right: 320
+    y_down: 240
+    
+ui_layout: 320x240_touch.yaml

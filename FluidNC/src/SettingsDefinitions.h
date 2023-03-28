@@ -4,6 +4,8 @@
 
 extern StringSetting* config_filename;
 
+extern StringSetting* ui_config_filename;
+
 extern StringSetting* build_info;
 
 extern StringSetting* start_message;
