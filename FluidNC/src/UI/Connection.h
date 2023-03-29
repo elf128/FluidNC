@@ -5,9 +5,9 @@
 
 #include "../Configuration/Configurable.h"
 
-namespace Machine {
-    class SPIBus;
-}
+//namespace Machine {
+//    class SPIBus;
+//}
 
 namespace UI {
     class SharedSPI;
@@ -21,14 +21,14 @@ namespace UI {
         pinnum_t _rst = 255;
         pinnum_t _en = 255;
 
-        Machine::SPIBus* _spi       = nullptr;
+//        Machine::SPIBus* _spi       = nullptr;
         SharedSPI*       _sharedSpi = nullptr;
 
     public:
         Connection() = default;
 
         void init();
-        void deinit();
+//        void deinit();
 
         void group(Configuration::HandlerBase& handler) override;
         void validate() override;

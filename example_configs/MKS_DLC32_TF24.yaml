@@ -4,10 +4,8 @@ version: 0.0.1
 lcd_driver:
     definition: ILI9341.yaml
     connection:
-        spi:
-            miso_pin: gpio.19
-            mosi_pin: gpio.23
-            sck_pin: gpio.18
+        shared_spi:
+            spi_host: 1
             cs_pin: gpio.25
             frequency: 40000000
             read_frequency: 20000000
@@ -18,13 +16,12 @@ lcd_driver:
 
     width: 320
     height: 240
-    rotate: 2
-    rgb_order: 1
     
 touch_driver:
     definition: Touch.yaml
     connection:
         shared_spi:
+            spi_host: 1
             cs_pin: gpio.26
             frequency: 2000000
             

@@ -23,6 +23,6 @@ namespace UI {
     }
 
     void LcdDriver::afterParse() {
-        log_info( " Use driver definition from " << _definitionsFilename );
+        log_info( " Use driver definition froma " << _definitionsFilename );
     }
 }

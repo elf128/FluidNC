@@ -11,8 +11,7 @@ namespace UI {
         handler.item("cs_pin",         _csPin );
         handler.item("frequency",      _mainClk, 20000, 160000000 );
         handler.item("read_frequency", _readClk, 20000, 160000000 );
-
-        handler.item("bus_id",         _busId,   0,3 );
+        handler.item("spi_host", _hostId, 0, MAX_N_SPI);
     }
 
     void SharedSPI::validate() {        

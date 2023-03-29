@@ -7,7 +7,7 @@
 
 namespace UI {
     void Connection::init() {
-        if ( _spi ) _spi->init();
+        if ( _sharedSpi ) _sharedSpi->init();
 
         if ( _dc_pin.defined() ) {
             log_info(" LCD connection DC: " << _dc_pin.name() );
@@ -25,20 +25,20 @@ namespace UI {
         }
     }
 
-    void Connection::deinit() {
-        if ( _spi ) _spi->deinit();
-    }
+//    void Connection::deinit() {
+//        if ( _spi ) _spi->deinit();
+//    }
 
     void Connection::group(Configuration::HandlerBase& handler) {
         handler.item("dc_pin",  _dc_pin );
         handler.item("rst_pin", _rst_pin);
         handler.item("en_pin",  _en_pin );
 
-        handler.section("spi", _spi, 1 );
+        handler.section("shared_spi", _sharedSpi );
     }
 
     void Connection::validate() {
-        Assert( _spi || _sharedSpi, "Currently, only SPI drivers are supported for LCD, but none defined");
+        Assert( _sharedSpi, "Currently, only SPI drivers are supported for LCD, but none defined");
     }
 
     void Connection::afterParse() {

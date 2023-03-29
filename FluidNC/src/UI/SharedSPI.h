@@ -12,7 +12,7 @@ namespace UI {
         int _mainClk;
         int _readClk;
 
-        int _busId;
+        int _hostId = 0;
 
     public:
         SharedSPI() = default;

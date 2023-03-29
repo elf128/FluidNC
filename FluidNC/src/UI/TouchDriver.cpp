@@ -12,7 +12,7 @@ namespace UI {
 
     void TouchDriver::group(Configuration::HandlerBase& handler) {
         handler.item("definition", _definitionsFilename );
-        
+
         handler.item("x_left",     _x_left,  -1000, 1000 );
         handler.item("x_right",    _x_right, -1000, 1000 );
         handler.item("y_up",       _y_up,    -1000, 1000 );
@@ -26,6 +26,6 @@ namespace UI {
     }
 
     void TouchDriver::afterParse() {
-        log_info( " Use driver definition froma " << _definitionsFilename );
+        log_info( " Use driver definition from " << _definitionsFilename );
     }
 }
