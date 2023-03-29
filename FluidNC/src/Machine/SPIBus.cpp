@@ -22,7 +22,7 @@ namespace Machine {
         pinnum_t sckPin  = 18;
 
         if (_miso.defined() || _mosi.defined() || _sck.defined()) {  // validation ensures the rest is also defined.
-            log_info("SPI SCK:" << _sck.name() << " MOSI:" << _mosi.name() << " MISO:" << _miso.name());
+            log_info("SPI" << _hostId << " SCK:" << _sck.name() << " MOSI:" << _mosi.name() << " MISO:" << _miso.name());
 
             mosiPin = _mosi.getNative(Pin::Capabilities::Output | Pin::Capabilities::Native);
             sckPin  = _sck.getNative(Pin::Capabilities::Output | Pin::Capabilities::Native);
@@ -35,7 +35,7 @@ namespace Machine {
             log_info("Using default SPI pins");
         }
         // Init in DMA mode
-        if (!spi_init_bus(sckPin, misoPin, mosiPin, true)) {
+        if (!spi_init_bus(sckPin, misoPin, mosiPin, true, _hostId) ) {
             log_error("SPIBus init failed");
             return;
         }
@@ -50,9 +50,6 @@ namespace Machine {
         handler.item("miso_pin", _miso);
         handler.item("mosi_pin", _mosi);
         handler.item("sck_pin", _sck);
-
-        handler.item("bus_id", _busId,   0,3 );
-
     }
 
     // XXX it would be nice to have some way to turn off SPI entirely

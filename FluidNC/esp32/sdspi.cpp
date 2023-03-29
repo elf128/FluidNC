@@ -67,7 +67,7 @@ static void call_host_deinit(const sdmmc_host_t* host_config) {
     }
 }
 
-bool sd_init_slot(uint32_t freq_hz, int cs_pin, int cd_pin, int wp_pin) {
+bool sd_init_slot(uint32_t freq_hz, int cs_pin, int hostId, int cd_pin, int wp_pin) {
     esp_err_t err;
 
     // Note: esp_vfs_fat_sdmmc/sdspi_mount is all-in-one convenience functions.
@@ -82,6 +82,8 @@ bool sd_init_slot(uint32_t freq_hz, int cs_pin, int cd_pin, int wp_pin) {
     if (freq_hz) {
         host_config.max_freq_khz = freq_hz / 1000;
     }
+
+    host_config.slot = hostId;
 
     err = host_config.init();
     CHECK_EXECUTE_RESULT(err, "host init failed");

@@ -18,9 +18,13 @@ void SDCard::init() {
     static bool init_message = true;  // used to show messages only once.
     pinnum_t    csPin;
     int         csFallback;
+    if (_hostId < 0 || _hostId >= MAX_N_SPI ) {
+        log_error("spi number for SD card is out of range. ");
+        return;
+    }
 
     if (_cs.defined()) {
-        if (!config->_spi->defined()) {
+        if (!config->_spi[_hostId]->defined()) {
             log_error("SD needs SPI defined");
         } else {
             log_info("SD Card cs_pin:" << _cs.name() << " detect:" << _cardDetect.name() << " freq:" << _frequency_hz);
@@ -39,9 +43,9 @@ void SDCard::init() {
     if (_cardDetect.defined()) {
         _cardDetect.setAttr(Pin::Attr::Input);
         auto cdPin = _cardDetect.getNative(Pin::Capabilities::Input | Pin::Capabilities::Native);
-        sd_init_slot(_frequency_hz, csPin, cdPin);
+        sd_init_slot(_frequency_hz, csPin, _hostId + 1, cdPin); // busId + 1 since we don't want to use spi host dedicated for flash memory
     } else {
-        sd_init_slot(_frequency_hz, csPin);
+        sd_init_slot(_frequency_hz, csPin, _hostId + 1 ); // busId + 1 since we don't want to use spi host dedicated for flash memory
     }
 }
 

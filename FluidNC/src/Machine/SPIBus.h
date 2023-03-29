@@ -8,10 +8,10 @@
 
 namespace Machine {
     class SPIBus : public Configuration::Configurable {
-        int _busId;
+        int  _hostId;
 
     public:
-        SPIBus(const int& busID = -1 ) : _busId( busID ) {}
+        SPIBus(const int& hostID = -1 ) : _hostId( hostID ) {}
 
         Pin _miso;
         Pin _mosi;

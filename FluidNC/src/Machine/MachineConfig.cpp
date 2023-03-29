@@ -49,7 +49,8 @@ namespace Machine {
         handler.section("i2c0", _i2c[0], 0);
         handler.section("i2c1", _i2c[1], 1);
 
-        handler.section("spi", _spi);
+        handler.section("spi0", _spi[0], 0 );
+        handler.section("spi1", _spi[1], 1 );
         handler.section("sdcard", _sdCard);
 
         handler.section("kinematics", _kinematics);
@@ -104,8 +105,8 @@ namespace Machine {
             _sdCard = new SDCard();
         }
 
-        if (_spi == nullptr) {
-            _spi = new SPIBus();
+        if (_spi[0] == nullptr) {
+            _spi[0] = new SPIBus();
         }
 
         if (_stepping == nullptr) {
@@ -268,7 +269,7 @@ namespace Machine {
         delete _coolant;
         delete _probe;
         delete _sdCard;
-        delete _spi;
+        delete _spi[0];
         delete _control;
         delete _macros;
     }

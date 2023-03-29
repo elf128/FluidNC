@@ -80,13 +80,17 @@ void setup() {
             if (config->_i2so) {
                 config->_i2so->init();
             }
-            if (config->_spi) {
-                config->_spi->init();
-
-                if (config->_sdCard != nullptr) {
-                    config->_sdCard->init();
+            
+            for (size_t i = 0; i < MAX_N_SPI; i++) {
+                if (config->_spi[i]) {
+                    config->_spi[i]->init();
                 }
             }
+
+            if (config->_sdCard != nullptr) {
+                config->_sdCard->init();
+            }
+
             for (size_t i = 0; i < MAX_N_I2C; i++) {
                 if (config->_i2c[i]) {
                     config->_i2c[i]->init();

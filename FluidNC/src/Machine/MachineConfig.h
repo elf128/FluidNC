@@ -59,7 +59,7 @@ namespace Machine {
 
         Axes*                 _axes           = nullptr;
         Kinematics*           _kinematics     = nullptr;
-        SPIBus*               _spi            = nullptr;
+        SPIBus*               _spi[MAX_N_SPI] = { nullptr };
         I2CBus*               _i2c[MAX_N_I2C] = { nullptr };
         I2SOBus*              _i2so           = nullptr;
         Stepping*             _stepping       = nullptr;

@@ -56,6 +56,9 @@ namespace MotorDrivers {
 
             handler.item("cs_pin", _cs_pin);
             handler.item("spi_index", _spi_index, -1, 127);
+            // ToDo: All drives assume we use HSPI a.k.a. SPI2_HOST a.k.a. spi0. 
+            // That's why reading of hostID from config is pointless. But this might be not right.
+            //handler.item("spi_host", _hostId, 0, MAX_N_SPI);
 
             handler.item("run_mode", _run_mode, trinamicModes);
             handler.item("homing_mode", _homing_mode, trinamicModes);
@@ -69,6 +72,7 @@ namespace MotorDrivers {
         int32_t   _spi_index      = -1;
         const int _spi_freq       = 100000;
         bool      _spi_setup_done = false;
+        int       _hostId         = 0;
 
         void config_message() override;
 

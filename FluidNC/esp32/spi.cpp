@@ -7,7 +7,7 @@
 #include "driver/spi_common.h"
 #include "src/Config.h"
 
-bool spi_init_bus(pinnum_t sck_pin, pinnum_t miso_pin, pinnum_t mosi_pin, bool dma) {
+bool spi_init_bus(pinnum_t sck_pin, pinnum_t miso_pin, pinnum_t mosi_pin, bool dma, int hostId) {
     // Start the SPI bus with the pins defined here.  Once it has been started,
     // those pins "stick" and subsequent attempts to restart it with defaults
     // for the miso, mosi, and sck pins are ignored
@@ -22,7 +22,10 @@ bool spi_init_bus(pinnum_t sck_pin, pinnum_t miso_pin, pinnum_t mosi_pin, bool d
     };
 
     // Depends on the chip variant
-    return !spi_bus_initialize(HSPI_HOST, &bus_cfg, dma ? SPI_DMA_CH1 : SPI_DMA_DISABLED);
+    return !spi_bus_initialize( 
+        ( hostId == 0 ) ? HSPI_HOST : VSPI_HOST, 
+        &bus_cfg, 
+        dma ? (( hostId == 0 ) ? SPI_DMA_CH1 : SPI_DMA_CH2) : SPI_DMA_DISABLED );
 }
 
 void spi_deinit_bus() {

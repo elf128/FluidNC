@@ -216,4 +216,10 @@ const bool ALLOW_FEED_OVERRIDE_DURING_PROBE_CYCLES = false;
 
 const int MAX_N_I2C = 2;
 
+// ESP32 has 4 spi perepherals.
+// However, 0 and 1 are used for attaching flash memory and for all practical
+// purpuses can be though as unavailable for use with external devices, such as sd card or lcd.
+// It's common to label 2 and 3 as HSPI and VSPI. They will be refered as spi0 and spi1 respectively.
+const int MAX_N_SPI = 2; 
+
 #include "NutsBolts.h"

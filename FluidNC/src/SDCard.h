@@ -41,6 +41,7 @@ private:
     State _state;
     Pin   _cardDetect;
     Pin   _cs;
+    int   _hostId = 0;
 
     uint32_t _frequency_hz = 0;  // Set to nonzero to override the default
 
@@ -59,6 +60,7 @@ public:
     // Configuration handlers.
     void group(Configuration::HandlerBase& handler) override {
         handler.item("cs_pin", _cs);
+        handler.item("spi_host", _hostId, 0, MAX_N_SPI);
         handler.item("card_detect_pin", _cardDetect);
         handler.item("frequency_hz", _frequency_hz);
     }

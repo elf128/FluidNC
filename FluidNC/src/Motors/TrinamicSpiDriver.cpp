@@ -20,7 +20,10 @@ namespace MotorDrivers {
     uint8_t TrinamicSpiDriver::setupSPI() {
         _has_errors = false;
 
-        auto spiConfig = config->_spi;
+        Assert (_hostId >= 0 && _hostId < MAX_N_SPI , "spi number for SD card is out of range. ");
+
+        auto spiConfig = config->_spi[_hostId];
+
         Assert(spiConfig && spiConfig->defined(), "SPI bus is not configured. Cannot initialize TMC driver.");
 
         uint8_t cs_id;
