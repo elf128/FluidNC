@@ -6,50 +6,31 @@
 #pragma once
 
 #include "../Assert.h"
-#include "../Configuration/GenericFactory.h"
-#include "../Configuration/HandlerBase.h"
-#include "../Configuration/Configurable.h"
-/*
-#include "../CoolantControl.h"
-#include "../Kinematics/Kinematics.h"
-#include "../WebUI/BTConfig.h"
-#include "../Control.h"
-#include "../Probe.h"
-#include "src/Parking.h"
-#include "../SDCard.h"
-#include "../Spindles/Spindle.h"
-#include "../Stepping.h"
-#include "../Stepper.h"
-#include "../Config.h"
-#include "../OLED.h"
-#include "Axes.h"
-#include "SPIBus.h"
-#include "I2CBus.h"
-#include "I2SOBus.h"
-#include "UserOutputs.h"
-#include "Macros.h"
-*/
+#include "../Configuration/ConfigRoot.h"
+
 namespace UI {
-    //using ::Kinematics::Kinematics;
     class LcdDriver;
     class TouchDriver;
+    class Layout;
 
-    class UIConfig : public Configuration::Configurable {
+    class UIConfig : public Configuration::ConfigRoot {
     public:
         UIConfig() = default;
 
-        LcdDriver*              _lcdDriver      = nullptr;
-        TouchDriver*            _touchDriver    = nullptr;
-
-        //Kinematics*           _kinematics     = nullptr;
-        //SPIBus*               _spi            = nullptr;
-        //I2CBus*               _i2c[MAX_N_I2C] = { nullptr };
+        LcdDriver*   _lcdDriver      = nullptr;
+        TouchDriver* _touchDriver    = nullptr;
+        Layout*      _uiLayout       = nullptr;
 
         String _screen = "Unknown";
         String _version  = "0.0.0";
+
 #if 1
         static UIConfig*& instance() {
             static UIConfig* instance = nullptr;
+
+            if ( instance == nullptr )
+                instance = new UIConfig();
+
             return instance;
         }
 #endif
@@ -57,12 +38,12 @@ namespace UI {
         void afterParse() override;
         void group(Configuration::HandlerBase& handler) override;
 
-        static bool load();
-        static bool load(const char* file);
-        static bool load(StringRange* input);
+        bool load() override;
+        void cleanup() override;
+        const char* name() override;
 
         ~UIConfig();
     };
 }
 
-extern UI::UIConfig* ui;
+//extern UI::UIConfig* ui;

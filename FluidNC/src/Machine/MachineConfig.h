@@ -5,9 +5,7 @@
 #pragma once
 
 #include "../Assert.h"
-#include "../Configuration/GenericFactory.h"
-#include "../Configuration/HandlerBase.h"
-#include "../Configuration/Configurable.h"
+#include "../Configuration/ConfigRoot.h"
 #include "../CoolantControl.h"
 #include "../Kinematics/Kinematics.h"
 #include "../WebUI/BTConfig.h"
@@ -53,7 +51,7 @@ namespace Machine {
         ~Start() = default;
     };
 
-    class MachineConfig : public Configuration::Configurable {
+    class MachineConfig : public Configuration::ConfigRoot {
     public:
         MachineConfig() = default;
 
@@ -96,19 +94,15 @@ namespace Machine {
         String _board = "None";
         String _name  = "None";
         String _meta  = "";
-#if 1
-        static MachineConfig*& instance() {
-            static MachineConfig* instance = nullptr;
-            return instance;
-        }
-#endif
+
+        static MachineConfig*& instance();
 
         void afterParse() override;
         void group(Configuration::HandlerBase& handler) override;
 
-        static bool load();
-        static bool load(const char* file);
-        static bool load(StringRange* input);
+        bool load() override;
+        void cleanup() override;
+        const char* name() override;
 
         ~MachineConfig();
     };

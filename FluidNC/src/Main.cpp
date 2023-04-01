@@ -54,9 +54,9 @@ void setup() {
             log_info("Local filesystem type is " << localfsName);
         }
 
-        bool configOkay = config->load();
+        bool configOkay = Machine::MachineConfig::instance()->load();
 #if defined( INCLUDE_LVGL )
-        bool uiOkay = ui->load();
+        bool uiOkay = UI::UIConfig::instance()->load();
 #endif
 
         make_user_commands();

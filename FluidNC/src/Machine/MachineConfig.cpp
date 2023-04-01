@@ -26,11 +26,13 @@
 #include <cstring>
 #include <atomic>
 
-Machine::MachineConfig* config;
+Machine::MachineConfig* config = nullptr;
 
 // TODO FIXME: Split this file up into several files, perhaps put it in some folder and namespace Machine?
 
 namespace Machine {
+    char _name_[] = "machine";
+
     void MachineConfig::group(Configuration::HandlerBase& handler) {
         handler.item("board", _board);
         handler.item("name", _name);
@@ -148,7 +150,7 @@ namespace Machine {
         }
     }
 
-    char defaultConfig[] = "name: Default (Test Drive)\nboard: None\n";
+    StringRange defaultConf = StringRange("name: Default (Test Drive)\nboard: None\n");
 
     bool MachineConfig::load() {
         bool configOkay;
@@ -159,118 +161,63 @@ namespace Machine {
             log_error("Skipping configuration file due to panic");
             configOkay = false;
         } else {
-            configOkay = load(config_filename->get());
+            configOkay = ConfigRoot::load(config_filename->get(), name() );
         }
 
         if (!configOkay) {
             log_info("Using default configuration");
-            configOkay = load(new StringRange(defaultConfig));
+
+            //StringRange* defaultConf = new StringRange(defaultConfig);
+            configOkay = ConfigRoot::load(&defaultConf, name() );
+            //delete[] defaultConf;
         }
 
         return configOkay;
     }
 
-    bool MachineConfig::load(const char* filename) {
-        try {
-            FileStream file(filename, "r", "");
+    MachineConfig*& MachineConfig::instance() {
+        if ( config == nullptr )
+            config = new MachineConfig();
 
-            auto filesize = file.size();
-            if (filesize <= 0) {
-                log_info("Configuration file:" << filename << " is empty");
-                return false;
-            }
+        // Currently, many parts of code refer this singleton using global variable 
+        // instead of calling MachineConfig::instance directly. 
+        // 
+        return config;
+    }
 
-            char* buffer     = new char[filesize + 1];
-            buffer[filesize] = '\0';
-            auto actual      = file.read(buffer, filesize);
-            if (actual != filesize) {
-                log_info("Configuration file:" << filename << " read error");
-                return false;
-            }
-            log_info("Configuration file:" << filename);
-            bool retval = load(new StringRange(buffer, buffer + filesize));
-            delete[] buffer;
-            return retval;
-        } catch (...) {
-            log_warn("Cannot open configuration file:" << filename);
-            return false;
+    void MachineConfig::cleanup() {
+        if ( _axes )       { delete _axes;       _axes = nullptr; }
+        if ( _kinematics ) { delete _kinematics; _kinematics = nullptr; }
+        if ( _i2so )       { delete _i2so;       _i2so = nullptr; }
+        if ( _stepping )   { delete _stepping;   _stepping = nullptr; }
+        if ( _coolant )    { delete _coolant;    _coolant = nullptr; }
+        if ( _probe )      { delete _probe;      _probe = nullptr; }
+        if ( _control )    { delete _control;    _control = nullptr; }
+        if ( _userOutputs ){ delete _userOutputs;_userOutputs = nullptr; }
+        if ( _sdCard )     { delete _sdCard;     _sdCard = nullptr; }
+        if ( _macros )     { delete _macros;     _macros = nullptr; }
+        if ( _start )      { delete _start;      _start = nullptr; }
+        if ( _parking )    { delete _parking;    _parking = nullptr; }
+        if ( _oled )       { delete _oled;       _oled = nullptr; }
+
+        for( int i = 0; i < MAX_N_SPI; i++ )
+            if ( _spi[i] )     { delete _spi[i]; _spi[i] = nullptr; }
+
+        for( int i = 0; i < MAX_N_I2C; i++ )
+            if ( _i2c[i] )     { delete _i2c[i]; _i2c[i] = nullptr; }
+
+        for( int i = 0; i < MAX_N_UARTS; i++ ) {
+            if ( _uarts[i] )         { delete _uarts[i];         _uarts[i] = nullptr; }
+            if ( _uart_channels[i] ) { delete _uart_channels[i]; _uart_channels[i] = nullptr; }
         }
     }
 
-    bool MachineConfig::load(StringRange* input) {
-        bool successful = false;
-        try {
-            Configuration::Parser        parser(input->begin(), input->end());
-            Configuration::ParserHandler handler(parser);
-
-            // instance() is by reference, so we can just get rid of an old instance and
-            // create a new one here:
-            {
-                auto& machineConfig = instance();
-                if (machineConfig != nullptr) {
-                    delete machineConfig;
-                }
-                machineConfig = new MachineConfig();
-            }
-            config = instance();
-
-            handler.enterSection("machine", config);
-
-            log_debug("Running after-parse tasks");
-
-            try {
-                Configuration::AfterParse afterParse;
-                config->afterParse();
-                config->group(afterParse);
-            } catch (std::exception& ex) { log_info("Validation error: " << ex.what()); }
-
-            log_debug("Checking configuration");
-
-            try {
-                Configuration::Validator validator;
-                config->validate();
-                config->group(validator);
-            } catch (std::exception& ex) { log_info("Validation error: " << ex.what()); }
-
-            // log_info("Heap size after configuation load is " << uint32_t(xPortGetFreeHeapSize()));
-
-            successful = (sys.state != State::ConfigAlarm);
-
-            if (!successful) {
-                log_info("Configuration is invalid");
-            }
-
-        } catch (const Configuration::ParseException& ex) {
-            sys.state = State::ConfigAlarm;
-            log_error("Configuration parse error on line " << ex.LineNumber() << ": " << ex.What());
-        } catch (const AssertionFailed& ex) {
-            sys.state = State::ConfigAlarm;
-            // Get rid of buffer and return
-            log_error("Configuration loading failed: " << ex.what());
-        } catch (std::exception& ex) {
-            sys.state = State::ConfigAlarm;
-            // Log exception:
-            log_error("Configuration validation error: " << ex.what());
-        } catch (...) {
-            sys.state = State::ConfigAlarm;
-            // Get rid of buffer and return
-            log_error("Unknown error while processing config file");
-        }
-        delete[] input;
-
-        std::atomic_thread_fence(std::memory_order::memory_order_seq_cst);
-
-        return successful;
+    const char* MachineConfig::name() {
+        return _name_;
     }
+
 
     MachineConfig::~MachineConfig() {
-        delete _axes;
-        delete _i2so;
-        delete _coolant;
-        delete _probe;
-        delete _sdCard;
-        delete _spi[0];
-        delete _control;
-        delete _macros;
+        cleanup();
     }
 }
